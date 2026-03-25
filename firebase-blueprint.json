@@ -1,0 +1,116 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile information including role and plan.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "photoURL": { "type": "string" },
+        "bio": { "type": "string" },
+        "plan": { "type": "string", "enum": ["Free", "Premium", "Business"] },
+        "role": { "type": "string", "enum": ["Produtor", "Especialista"] }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Trilha": {
+      "title": "Learning Path",
+      "description": "A learning path containing multiple modules and lessons.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "icon": { "type": "string" },
+        "isPremium": { "type": "boolean" },
+        "modules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "aulas": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "required": ["title", "category"]
+    },
+    "Aula": {
+      "title": "Lesson",
+      "description": "An individual lesson within a module.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "videoUrl": { "type": "string" },
+        "content": { "type": "string" },
+        "duration": { "type": "string" },
+        "tasks": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["title"]
+    },
+    "Progress": {
+      "title": "User Progress",
+      "description": "Tracking user progress through a learning path.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "trilhaId": { "type": "string" },
+        "completedAulas": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "lastAccessed": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "trilhaId"]
+    },
+    "Especialista": {
+      "title": "Specialist",
+      "description": "A specialist available for consultation.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "specialty": { "type": "string" },
+        "bio": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "rating": { "type": "number" },
+        "projects": { "type": "number" }
+      },
+      "required": ["name", "specialty"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles."
+    },
+    "/trilhas/{trilhaId}": {
+      "schema": "Trilha",
+      "description": "Learning paths."
+    },
+    "/trilhas/{trilhaId}/modulos/{moduloId}": {
+      "schema": "Modulo",
+      "description": "Modules within a path."
+    },
+    "/trilhas/{trilhaId}/modulos/{moduloId}/aulas/{aulaId}": {
+      "schema": "Aula",
+      "description": "Lessons within a module."
+    },
+    "/users/{userId}/progress/{progressId}": {
+      "schema": "Progress",
+      "description": "User progress tracking."
+    },
+    "/especialistas/{especialistaId}": {
+      "schema": "Especialista",
+      "description": "Specialist profiles."
+    }
+  }
+}
