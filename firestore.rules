@@ -66,17 +66,20 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() &&
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+        ((exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
           (request.auth.token.email == "sousanaty09@gmail.com" && request.auth.token.email_verified == true));
     }
 
     function hasPremiumAccess() {
       return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.plan in ['grow', 'grow_pro'];
     }
 
     function hasProAccess() {
       return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.plan == 'grow_pro';
     }
 
@@ -101,14 +104,14 @@ service cloud.firestore {
     // ===============================================================
 
     function isValidUser(data) {
-      return hasOnlyAllowedFields(['uid', 'displayName', 'email', 'photoURL', 'bio', 'plan', 'role']) &&
+      return hasOnlyAllowedFields(['uid', 'displayName', 'email', 'photoURL', 'bio', 'plan', 'role', 'createdAt', 'updatedAt', 'subscriptionPeriod', 'subscriptionStatus', 'stripeCustomerId', 'purchasedCourses']) &&
              data.uid is string &&
              data.email is string && isValidEmail(data.email) &&
              (!('displayName' in data) || data.displayName is string) &&
              (!('photoURL' in data) || data.photoURL is string) &&
              (!('bio' in data) || data.bio is string) &&
              (!('plan' in data) || data.plan in ['free', 'grow', 'grow_pro']) &&
-             (!('role' in data) || data.role in ['Produtor', 'Especialista', 'admin']);
+             (!('role' in data) || data.role in ['student', 'producer', 'specialist', 'admin', 'Produtor', 'Especialista']);
     }
 
     function isValidTrilha(data) {
@@ -167,8 +170,7 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId) && isValidUser(request.resource.data) && (request.resource.data.role != 'admin' || isAdmin());
-      allow update: if isOwner(userId) && isValidUser(request.resource.data) && (request.resource.data.role == resource.data.role || isAdmin());
+      allow write: if isOwner(userId);
     }
 
     match /trilhas/{trilhaId} {
