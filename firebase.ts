@@ -3,11 +3,19 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 
 // Import the Firebase configuration
-import firebaseConfig from '../firebase-applet-config.json';
+const firebaseConfig = {
+  apiKey: "AIzaSyAmspwnFJem1DzyIujzaphhHxDJ68S4qs4",
+  authDomain: "eniessegrow.firebaseapp.com",
+  projectId: "eniessegrow",
+  storageBucket: "eniessegrow.firebasestorage.app",
+  messagingSenderId: "540448772356",
+  appId: "1:540448772356:web:2fc4b5e352e1a5ab5e0051",
+  measurementId: "G-73SWE3NWL9"
+};
 
 // Initialize Firebase SDK
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const db = getFirestore(app);
 export const auth = getAuth();
 
 async function testConnection() {
